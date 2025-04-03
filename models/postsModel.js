@@ -12,12 +12,10 @@ const postSchema = mongoose.Schema({
         trim: true,
     },
     userId:{
-        type: mongoose.Schema.Types,ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
         required: true,
     }
-},{
-    timestamps: true
-})
+},{ timestamps: true })
 
 module.exports = mongoose.model('Post', postSchema)

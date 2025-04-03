@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema({
     email:{
         type: String,
         required: [true,'Email is required!'],
-        trim, true,
+        trim: true,
         unique: [true, 'Email must be unique!'],
         minLength: [5, 'Email must have at least 5 characters!'],
         lowercase: true,
@@ -32,9 +32,9 @@ const userSchema = mongoose.Schema({
     forgotPasswordCode: {
         type: String, 
         select: false,
-    }
+    },
     forgotPasswordCodeValidation: {
-        type: String, 
+        type: Number, 
         select: false,
     }
 },{

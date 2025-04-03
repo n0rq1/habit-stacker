@@ -1,12 +1,15 @@
 const { signupSchema } = require("../middlewares/validator");
+const User = require('../models/usersModel');
+const { doHash } = require('../utils/hashing');
 
 exports.signup = async (req, res) => {
     const {email, password} = req.body;
     try {
         const { error, value } = signupSchema.validate({email, password});
         if (error){
-            return res.status(401).json({success:false, message: error.details[0]});
+            return res.status(401).json({success:false, message: error.details[0].message});
         }
+
         const existingUser = await User.findOne({email});
 
         if (existingUser){
@@ -24,8 +27,8 @@ exports.signup = async (req, res) => {
             success: true, 
             message: "Your account has been created!", 
             result,
-        })
+        });
     } catch(error){
-        console.log(error);
+        console.log(error); 
     }
 }
