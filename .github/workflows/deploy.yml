@@ -75,8 +75,8 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker tag habit ${{ secrets.DOCKER_USERNAME }}/habit:${{ needs.create-release-version.outputs.version }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/habit:${{ needs.create-release-version.outputs.version }}
+          docker tag habit ${{ secrets.DOCKER_USERNAME }}/habitstacker:${{ needs.create-release-version.outputs.version }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/habitstacker:${{ needs.create-release-version.outputs.version }}
   
   deploy:
     runs-on: ubuntu-latest
