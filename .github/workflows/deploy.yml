@@ -7,7 +7,7 @@ on:
       branches: ["main"]
 
 jobs: 
-  build-push-image:
+  build-image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -34,7 +34,7 @@ jobs:
       issues: write
       pull-requests: write
 
-    needs: build-push-image
+    needs: build-image
     outputs:
       version: ${{ steps.get_version.outputs.VERSION }}
 

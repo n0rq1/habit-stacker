@@ -16,11 +16,11 @@ app.use(express.urlencoded({extended:true}));
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log("DB Connected");
 }).catch(err => {
-    console.log("Error");
+    console.log("Error - didn't connect to DB");
 })
 
 app.get('/', (req,res) => {
-    res.json({message: "hello"});
+    res.json({message: "Habit Stacker"});
 })
 
 app.use('/api/auth', authRouter);
