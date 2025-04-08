@@ -95,3 +95,5 @@ jobs:
           service: 'habitstacker'
           region: us-west1
           image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/habitstacker:${{ needs.push-image.outputs.version }}'
+          env_vars: |
+            MONGO_URI=${{ secrets.MONGO_URI }}
