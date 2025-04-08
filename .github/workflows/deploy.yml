@@ -72,3 +72,4 @@ jobs:
         run: |
           docker tag habit ${{ secrets.DOCKER_USERNAME }}/habitstacker:${{ needs.create-release-version.outputs.version }}
           docker push ${{ secrets.DOCKER_USERNAME }}/habitstacker:${{ needs.create-release-version.outputs.version }}
+          
