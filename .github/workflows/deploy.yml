@@ -14,13 +14,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: docker build -t anorquist/habitstacker .
+        run: docker build -t habit .
+      
+      - name: retag Docker Image
+        run: docker tag habit anorquist/habitstacker:v3
 
       - name: Log in to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
       
       - name: Push Docker image 
-        run: docker push anorquist/habitstacker:latest
+        run: docker push anorquist/habitstacker:v3
 
       - name: Google Auth
         uses: 'google-github-actions/auth@v2'
@@ -33,4 +36,4 @@ jobs:
         with:
           service: 'habitstacker'
           region: us-west1
-          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/habitstacker:latest'
+          image: 'docker.io/${{ secrets.DOCKER_USERNAME }}/habitstacker:v3'

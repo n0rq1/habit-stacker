@@ -1,3 +1,4 @@
+const PORT = process.env.PORT || 8080;
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -24,6 +25,6 @@ app.get('/', (req,res) => {
 
 app.use('/api/auth', authRouter);
 
-app.listen(process.env.PORT, ()=>{
-    console.log("listening");
-})
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server is running on port ${PORT}`);
+});
