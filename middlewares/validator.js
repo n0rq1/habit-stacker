@@ -1,9 +1,18 @@
 const Joi = require('joi');
 
 exports.signupSchema = Joi.object({
+    username: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .messages({
+        'string.empty': 'Username is required',
+        'string.min': 'Username must be at least 3 characters',
+        'string.max': 'Username must be at most 15 characters'
+    }),
     email: Joi.string()
         .min(6)
-        .max(60)
+        .max(20)
         .required()
         .email({
             tlds: { allow: ['com', 'net', 'edu'] },
