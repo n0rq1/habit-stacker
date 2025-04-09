@@ -3,7 +3,7 @@ const Joi = require('joi');
 exports.signupSchema = Joi.object({
     username: Joi.string()
     .min(3)
-    .max(30)
+    .max(15)
     .required()
     .messages({
         'string.empty': 'Username is required',
@@ -12,7 +12,7 @@ exports.signupSchema = Joi.object({
     }),
     email: Joi.string()
         .min(6)
-        .max(20)
+        .max(35)
         .required()
         .email({
             tlds: { allow: ['com', 'net', 'edu'] },

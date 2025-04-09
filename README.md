@@ -16,17 +16,13 @@ Uses Semantic Release Versioning and the workflow automatically updates it given
   
 
 If running the container locally, use:
-> docker build -t habitstacker .
-> docker run -p 8080:8080 habitstacker 
+> docker build -t habit .
+> docker run --env-file .env -p 8080:8080 habit
 
 You should see:
 ```
-docker run -p 8080:8080 habitstacker
-
-> habit-stacker@1.0.0 dev
-> node --watch --trace-warnings --env-file=.env index.js
-
-listening
+austin$ docker run --env-file .env -p 8080:8080 habit
+✅ Server is running on port 8080
 DB Connected
 ```
 
