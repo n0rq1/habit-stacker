@@ -14,10 +14,14 @@ Uses Semantic Release Versioning and the workflow automatically updates it given
 - Breaking Release (Note that the BREAKING CHANGE:  token must be in the footer of the commit)
   - Example commit message: `feat: Changed User model to work with DB *line break x 2* BREAKING CHANGE: Explanation ...`
   
+***
 
 If running the container locally, use:
-> docker build -t habit .
-> docker run --env-file .env -p 8080:8080 habit
+`docker build -t habit .`
+To build the image
+
+`docker run --env-file .env -p 8080:8080 habit`
+To run the container
 
 You should see:
 ```
@@ -27,6 +31,7 @@ DB Connected
 ```
 
 Now, you should be able to test the endpoints:
-> http://localhost:8080/api/auth/signup
-> http://localhost:8080/api/auth/signin
-> http://localhost:8080/api/auth/signout
+
+`http://localhost:8080/api/auth/signup`
+`http://localhost:8080/api/auth/signin`
+`http://localhost:8080/api/auth/signout`
