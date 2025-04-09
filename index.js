@@ -8,8 +8,11 @@ const cookieParser = require('cookie-parser');
 const authRouter = require('./routers/authRouter');
 
 const app = express();
+app.use(cors({
+    origin: 'https://habithop.netlify.app',
+    credentials: true
+}));
 app.use(express.json());
-app.use(cors());
 app.use(helmet());
 app.use(express.urlencoded({extended:true}));
 
