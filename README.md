@@ -3,7 +3,7 @@
 Uses Semantic Release Versioning and the workflow automatically updates it given keywords in the commit messages:
 
 `fix` will do v1.0.1 -> v1.0.2
-- Fix Release
+- Fix Release 
   - Example commit message: `fix: Cleaned up index.js`
 
 `feat` will do v1.0.1 -> v1.1.0
