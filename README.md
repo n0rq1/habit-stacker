@@ -12,9 +12,11 @@ The API is automatically deployed to Google Cloud Run using GitHub Actions and D
 
 If running the container locally, use:
 `docker build -t habit .`
+
 To build the image
 
 `docker run --env-file .env -p 8080:8080 habit`
+
 To run the container
 
 You should see:
