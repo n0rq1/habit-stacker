@@ -5,14 +5,13 @@ const habitSchema = mongoose.Schema({
     habitID: {
         type: Number,
         required: [true, 'Habit ID is required!'],
-        trim: true,
         unique: [true, 'Habit ID must be unique!'],
-    },
-    habitName:{
-        type: String,
-        required: [true,'Habit name is required!'],
         trim: true,
-        //unique: [false, 'Email must be unique!'], not sure if this needs to be unique for the user
+    },
+    habitName: {
+        type: String,
+        required: [true, 'Habit name is required!'],
+        trim: true,
         minLength: [3, 'Habit name must be at least 3 characters!'],
         maxLength: [40, 'Habit name must be less than 40 characters!']
     },
@@ -21,26 +20,47 @@ const habitSchema = mongoose.Schema({
         trim: true
     },
     habitImage: {
-        // type: Boolean, not sure what to put for this 
-        required: [true, 'Habit image is required!']
+        type: String,
+        required: [true, 'Habit image is required!'],
+        trim: true
     },
-    habitMinTime: {
 
+    // ⏰ New fields
+    startTime: {
+        type: String, // or Date if you want full datetime
+        required: [true, 'Start time is required!'],
+        trim: true
     },
-    habitMaxTime: {
+    endTime: {
+        type: String,
+        required: [true, 'End time is required!'],
+        trim: true,
+        validate: {
+            validator: function (value) {
+                return value > this.startTime;
+            },
+            message: 'End time must be after start time'
+        }
+    },
 
+    // Optional: Days of week this habit repeats
+    daysOfWeek: {
+        type: [String],
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        required: [true, 'At least one day is required']
     },
-    preferredTime: {
 
-    },
     createBy: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'Creator is required!']
     },
     isPublish: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
-},{
-    timestamps:true
+}, {
+    timestamps: true
 });
 
-module.exports = mongoose.model('Habit',  habitSchema);
+module.exports = mongoose.model('Habit', habitSchema);
