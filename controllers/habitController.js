@@ -17,7 +17,7 @@ exports.createHabit = async (req, res) => {
             });
         }
 
-        const userId = req.user.userId;
+        const userId = req.user._id; 
 
         const exists = await Habit.findOne({ habitID: value.habitID, createBy: userId });
         if (exists) {
