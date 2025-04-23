@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routers/userRouter');
 const authRouter = require('./routers/authRouter');
+const habitRouter = require('./routers/habitRouter');
 
 const app = express();
 app.use(cookieParser());
@@ -31,6 +32,7 @@ app.get('/', (req,res) => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
+app.use('/api/habit', habitRouter);
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running on port ${PORT}`);
