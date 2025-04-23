@@ -16,7 +16,4 @@ router.post('/habit', authenticateUser, habitController.createHabit);
 router.get('/habit', authenticateUser, habitController.getHabits);
 router.put('/habit/:habitId', authenticateUser, habitController.updateHabit);
 
-
-
-
 module.exports = router;

@@ -2,7 +2,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/usersModel'); 
 
 exports.authenticateUser = async (req, res, next) => {
-    const token = req.cookies.Authorization?.split(' ')[1];
+    const cookieToken = req.cookies.Authorization?.split(' ')[1];
+    const headerToken = req.headers.authorization?.split(' ')[1];
+    const token = cookieToken || headerToken;
   
     if (!token) {
       return res.status(401).json({ success: false, message: 'Access Denied. No token provided.' });
@@ -23,7 +25,7 @@ exports.authenticateUser = async (req, res, next) => {
       req.user = user;
       next();
     } catch (err) {
-      console.error('Token verification error:', err); 
+      console.error('Token verification error:', err);
       return res.status(400).json({ success: false, message: 'Invalid token.' });
     }
-};  
+};
