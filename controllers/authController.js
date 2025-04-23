@@ -74,7 +74,9 @@ exports.signin = async (req, res) => {
             email: existingUser.email,
             username: existingUser.username,
             verified: existingUser.verified,
-        }, process.env.TOKEN_SECRET);
+        }, process.env.TOKEN_SECRET,{
+            expiresIn: '7d'
+        });
 
         res.cookie('Authorization', 'Bearer ' + token, {
             expires: new Date(Date.now() + 8 * 3600000), 
