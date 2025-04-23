@@ -5,7 +5,6 @@ const habitSchema = mongoose.Schema({
     habitID: {
         type: Number,
         required: [true, 'Habit ID is required!'],
-        unique: [true, 'Habit ID must be unique!'],
         trim: true,
     },
     habitName: {
@@ -24,10 +23,8 @@ const habitSchema = mongoose.Schema({
         required: [true, 'Habit image is required!'],
         trim: true
     },
-
-    // ⏰ New fields
     startTime: {
-        type: String, // or Date if you want full datetime
+        type: String, 
         required: [true, 'Start time is required!'],
         trim: true
     },
@@ -42,14 +39,20 @@ const habitSchema = mongoose.Schema({
             message: 'End time must be after start time'
         }
     },
-
-    // Optional: Days of week this habit repeats
-    daysOfWeek: {
-        type: [String],
-        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        required: [true, 'At least one day is required']
+    calendarDates: {
+        type: [Date],
+        required: [true, 'At least one date is required'],
+        validate: {
+            validator: function (arr) {
+                return arr.length > 0;
+            },
+            message: 'You must provide at least one date'
+        }
     },
-
+    completedDates: {
+        type: [Date],
+        default: [],
+    },
     createBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

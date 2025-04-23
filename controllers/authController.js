@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
-const { signupSchema, signinSchema, habitSchema } = require("../middlewares/validator");
+const { signupSchema, signinSchema } = require("../middlewares/validator");
 const User = require('../models/usersModel');
-const Habit = require('../models/habitModel');
 const { authenticateUser } = require('../middlewares/auth');
 const { doHash, doHashValidation } = require('../utils/hashing');
 
@@ -97,39 +96,4 @@ exports.signout = async (req, res) => {
     res.clearCookie('Authorization')
        .status(200)
        .json({ success: true, message: "Logged out successfully" });
-};
-
-exports.createHabit = async (req, res) => {
-    try {
-        // Validate using Joi schema
-        const { error, value } = habitSchema.validate(req.body, { abortEarly: false });
-
-        if (error) {
-            const messages = error.details.map(detail => detail.message);
-            return res.status(400).json({
-                success: false,
-                message: "Validation failed",
-                errors: messages
-            });
-        }
-
-        const userId = req.user.userId;
-
-        const newHabit = new Habit({
-            ...value, // all validated habit fields
-            createBy: userId
-        });
-
-        const savedHabit = await newHabit.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Habit created successfully",
-            habit: savedHabit
-        });
-
-    } catch (err) {
-        console.error("Create Habit error:", err);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
 };
