@@ -63,7 +63,7 @@ exports.createHabit = async (req, res) => {
 
 exports.getHabits = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user._id; 
 
         const habits = await Habit.find({ createBy: userId });
 
@@ -80,7 +80,7 @@ exports.getHabits = async (req, res) => {
 
 exports.updateHabit = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user._id; 
         const habitID = req.params.habitId;
 
         const updates = req.body;
