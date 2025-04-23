@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
-const { signupSchema, signinSchema, habitSchema } = require("../middlewares/validator");
+const { signupSchema, signinSchema } = require("../middlewares/validator");
 const User = require('../models/usersModel');
-const Habit = require('../models/habitModel');
 const { authenticateUser } = require('../middlewares/auth');
 const { doHash, doHashValidation } = require('../utils/hashing');
 
@@ -77,7 +76,9 @@ exports.signin = async (req, res) => {
             email: existingUser.email,
             username: existingUser.username,
             verified: existingUser.verified,
-        }, process.env.TOKEN_SECRET);
+        }, process.env.TOKEN_SECRET,{
+            expiresIn: '7d'
+        });
 
         res.cookie('Authorization', 'Bearer ' + token, {
             expires: new Date(Date.now() + 8 * 3600000), 
@@ -105,44 +106,6 @@ exports.signout = async (req, res) => {
        .status(200)
        .json({ success: true, message: "Logged out successfully" });
 };
-
-exports.createHabit = async (req, res) => {
-    try {
-        // Validate using Joi schema
-        const { error, value } = habitSchema.validate(req.body, { abortEarly: false });
-
-        if (error) {
-            const messages = error.details.map(detail => detail.message);
-            return res.status(400).json({
-                success: false,
-                message: "Validation failed",
-                errors: messages
-            });
-        }
-
-        const userId = req.user.userId;
-
-        const newHabit = new Habit({
-            ...value, // all validated habit fields
-            createBy: userId
-        });
-
-        const savedHabit = await newHabit.save();
-
-        res.status(201).json({
-            success: true,
-            message: "Habit created successfully",
-            habit: savedHabit
-        });
-
-    } catch (err) {
-        console.error("Create Habit error:", err);
-        res.status(500).json({ success: false, message: "Internal server error" });
-    }
-};
-
-
-
 
 exports.updateProfile = async (req, res) => {  
     if (!req.body || !req.body.email || !req.body.username) {

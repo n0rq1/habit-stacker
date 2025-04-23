@@ -59,9 +59,14 @@ exports.habitSchema = Joi.object({
             return value;
         }),
 
-    daysOfWeek: Joi.array().items(
-        Joi.string().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
-    ).min(1).required(),
+    calendarDates: Joi.array()
+        .items(Joi.date().iso())
+        .min(0),
 
+    completedDates: Joi.array()
+        .items(Joi.date().iso())
+        .optional()
+        .default([]),
+    
     isPublish: Joi.boolean().optional()
 });
