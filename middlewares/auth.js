@@ -5,7 +5,7 @@ exports.authenticateUser = async (req, res, next) => {
     const cookieToken = req.cookies.Authorization?.split(' ')[1];
     const headerToken = req.headers.authorization?.split(' ')[1];
     const token = cookieToken || headerToken;
-  
+    console.log("Incoming headers:", req.headers); 
     if (!token) {
       return res.status(401).json({ success: false, message: 'Access Denied. No token provided.' });
     }

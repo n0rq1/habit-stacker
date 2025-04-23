@@ -16,4 +16,9 @@ router.post('/habit', authenticateUser, habitController.createHabit);
 router.get('/habit', authenticateUser, habitController.getHabits);
 router.put('/habit/:habitId', authenticateUser, habitController.updateHabit);
 
+router.get('/test', (req, res) => {
+    console.log('/api/auth/test hit!');
+    res.json({ message: 'Test success!' });
+});
+
 module.exports = router;

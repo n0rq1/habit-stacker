@@ -11,7 +11,7 @@ const authRouter = require('./routers/authRouter');
 const app = express();
 app.use(cookieParser());
 app.use(cors({
-    origin: '*',
+    origin: ['https://habithop.netlify.app', 'http://localhost:3000'], 
     credentials: true
 }));
 
