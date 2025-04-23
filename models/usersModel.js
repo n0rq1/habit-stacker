@@ -24,6 +24,10 @@ const userSchema = mongoose.Schema({
         trim: true,
         select:false
     },
+    profileImage: {
+        type: String,
+        default: null
+    },
     verified: {
         type: Boolean,
         default: false

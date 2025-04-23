@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const { signupSchema, signinSchema, habitSchema } = require("../middlewares/validator");
 const User = require('../models/usersModel');
 const Habit = require('../models/habitModel');
@@ -85,6 +87,11 @@ exports.signin = async (req, res) => {
             success: true,
             message: "Logged in successfully",
             token,
+            user: {
+                username: existingUser.username,
+                email: existingUser.email,
+                profileImage: existingUser.profileImage || null
+            }
         });
 
     } catch (error) {
@@ -130,6 +137,42 @@ exports.createHabit = async (req, res) => {
 
     } catch (err) {
         console.error("Create Habit error:", err);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+
+
+exports.updateProfile = async (req, res) => {  
+    if (!req.body || !req.body.email || !req.body.username) {
+        return res.status(400).json({ message: "Missing email or username" });
+      }
+      
+    const { email, username } = req.body;
+    const file = req.file;
+    try {
+        let base64ProfileImage = null;
+        if (file) {
+            const imageBuffer = fs.readFileSync(file.path);
+            const mimeType = file.mimetype; // e.g., 'image/jpeg' or 'image/png'
+            base64ProfileImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+        }
+        const updatedUser = await User.findOneAndUpdate(
+            { email }, // assuming update based on email
+            {
+                username,
+                profileImage: base64ProfileImage,
+            },
+            { new: true }
+        );
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error("Update profile error:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
