@@ -115,18 +115,19 @@ exports.updateProfile = async (req, res) => {
     const { email, username } = req.body;
     const file = req.file;
     try {
-        let base64ProfileImage = null;
+        let updateFields = {
+            username,
+          };          
         if (file) {
             const imageBuffer = fs.readFileSync(file.path);
-            const mimeType = file.mimetype; // e.g., 'image/jpeg' or 'image/png'
+            const mimeType = file.mimetype;
             base64ProfileImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+            updateFields.profileImage = base64ProfileImage;
+
         }
         const updatedUser = await User.findOneAndUpdate(
             { email }, // assuming update based on email
-            {
-                username,
-                profileImage: base64ProfileImage,
-            },
+            updateFields,
             { new: true }
         );
         res.status(200).json({
