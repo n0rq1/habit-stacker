@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const { signupSchema, signinSchema } = require("../middlewares/validator");
 const User = require('../models/usersModel');
 const { authenticateUser } = require('../middlewares/auth');
@@ -86,6 +88,11 @@ exports.signin = async (req, res) => {
             success: true,
             message: "Logged in successfully",
             token,
+            user: {
+                username: existingUser.username,
+                email: existingUser.email,
+                profileImage: existingUser.profileImage || null
+            }
         });
 
     } catch (error) {
@@ -98,4 +105,38 @@ exports.signout = async (req, res) => {
     res.clearCookie('Authorization')
        .status(200)
        .json({ success: true, message: "Logged out successfully" });
+};
+
+exports.updateProfile = async (req, res) => {  
+    if (!req.body || !req.body.email || !req.body.username) {
+        return res.status(400).json({ message: "Missing email or username" });
+      }
+      
+    const { email, username } = req.body;
+    const file = req.file;
+    try {
+        let updateFields = {
+            username,
+          };          
+        if (file) {
+            const imageBuffer = fs.readFileSync(file.path);
+            const mimeType = file.mimetype;
+            base64ProfileImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+            updateFields.profileImage = base64ProfileImage;
+
+        }
+        const updatedUser = await User.findOneAndUpdate(
+            { email }, // assuming update based on email
+            updateFields,
+            { new: true }
+        );
+        res.status(200).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error("Update profile error:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 };
