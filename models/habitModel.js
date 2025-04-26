@@ -1,4 +1,3 @@
-const {required} = require('joi');
 const mongoose = require('mongoose');
 
 const habitSchema = mongoose.Schema({
@@ -20,7 +19,22 @@ const habitSchema = mongoose.Schema({
     },
     habitImage: {
         type: String,
-        required: [true, 'Habit image is required!'],
+        required: false,
+        trim: true
+    },
+    habitMinTime: {
+        type: Number,
+        required: true,
+        trim: true
+    },
+    habitMaxTime: {
+        type: Number,
+        required: true,
+        trim: true
+    },
+    preferredTime: {
+        type: String,
+        required: true,
         trim: true
     },
     startTime: {
@@ -39,28 +53,10 @@ const habitSchema = mongoose.Schema({
             message: 'End time must be after start time'
         }
     },
-    calendarDates: {
-        type: [Date],
-        required: [true, 'At least one date is required'],
-        validate: {
-            validator: function (arr) {
-                return arr.length > 0;
-            },
-            message: 'You must provide at least one date'
-        }
-    },
-    completedDates: {
-        type: [Date],
-        default: [],
-    },
-    createBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: [true, 'Creator is required!']
-    },
-    isPublish: {
-        type: Boolean,
-        default: false
+    daysOfWeek: {
+        type: [String],
+        required: false,
+        default: []
     }
 }, {
     timestamps: true

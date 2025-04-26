@@ -5,7 +5,7 @@ const habitController = require('../controllers/habitController');
 const { authenticateUser } = require('../middlewares/auth');
 
 router.post('/create', authenticateUser, habitController.createHabit);
-router.get('/getHabit', authenticateUser, habitController.getHabits);
+router.get('/getHabits', authenticateUser, habitController.getHabits);
 router.put('/update/:habitId', authenticateUser, habitController.updateHabit);
 
 module.exports = router;
