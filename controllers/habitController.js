@@ -1,8 +1,14 @@
-const Habit = require('../models/habitModel');
 const { habitSchema } = require("../middlewares/validator");
+const User = require('../models/usersModel');
+const { v4: uuidv4 } = require('uuid'); 
+
+const normalizeHabitName = (habitName) => {
+    return habitName.replace(/\s+/g, '').toLowerCase();
+};
 
 exports.createHabit = async (req, res) => {
     try {
+        const userId = req.params.userId;
         const { error, value } = habitSchema.validate(req.body, { abortEarly: false });
 
         if (error) {
@@ -14,27 +20,31 @@ exports.createHabit = async (req, res) => {
             });
         }
 
-        const userId = req.user._id;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
-        const exists = await Habit.findOne({ habitID: value.habitID, createBy: userId });
+        const habitId = uuidv4();
+        const normalizedHabitName = normalizeHabitName(value.habitName);
+
+        const exists = user.habits.some(habit => normalizeHabitName(habit.habitName) === normalizedHabitName);
         if (exists) {
             return res.status(409).json({
                 success: false,
-                message: "You already have a habit with this ID"
+                message: "A habit with this name already exists"
             });
         }
 
-        const newHabit = new Habit({
-            ...value,
-            createBy: userId
-        });
-
-        const savedHabit = await newHabit.save();
+        value.habitId = habitId;
+        user.habits.push(value);
+        await user.save();
 
         res.status(201).json({
             success: true,
-            message: "Habit created successfully",
-            habit: savedHabit
+            message: "Habit added successfully",
+            habit: value
         });
 
     } catch (err) {
@@ -45,17 +55,20 @@ exports.createHabit = async (req, res) => {
 
 exports.getHabits = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const { userId } = req.params;
 
-        const habits = await Habit.find({ createBy: userId });
+        const user = await User.findById(userId).select('habits');
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
 
         res.status(200).json({
             success: true,
-            habits
+            habits: user.habits
         });
 
     } catch (err) {
-        console.error("Get Habits error:", err);
+        console.error("Get Habits by userId error:", err);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
@@ -63,8 +76,14 @@ exports.getHabits = async (req, res) => {
 exports.updateHabit = async (req, res) => {
     try {
         const userId = req.user._id;
-        const habitID = req.params.habitId;
+        const habitId = req.params.habitId;
         const updates = req.body;
+
+        delete updates.normalizedHabitName;
+
+        if (updates.habitName) {
+            updates.normalizedHabitName = normalizeHabitName(updates.habitName);
+        }
 
         const { error } = habitSchema.validate(updates, { abortEarly: false });
         if (error) {
@@ -76,18 +95,32 @@ exports.updateHabit = async (req, res) => {
             });
         }
 
-        const habit = await Habit.findOneAndUpdate(
-            { habitID, createBy: userId },
-            { $set: updates },
-            { new: true, runValidators: true }
-        );
-
-        if (!habit) {
-            return res.status(404).json({
-                success: false,
-                message: 'Habit not found'
-            });
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
+
+        const habit = user.habits.find(h => h.habitId === habitId);
+        if (!habit) {
+            return res.status(404).json({ success: false, message: "Habit not found" });
+        }
+
+        if (updates.habitName) {
+            const normalizedUpdatedName = normalizeHabitName(updates.habitName);
+            const exists = user.habits.some(h => normalizeHabitName(h.habitName) === normalizedUpdatedName);
+            if (exists) {
+                return res.status(409).json({
+                    success: false,
+                    message: "A habit with this name already exists"
+                });
+            }
+        }
+
+        Object.keys(updates).forEach(key => {
+            habit[key] = updates[key];
+        });
+
+        await user.save();
 
         res.status(200).json({
             success: true,
@@ -97,6 +130,35 @@ exports.updateHabit = async (req, res) => {
 
     } catch (err) {
         console.error("Update Habit error:", err);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+exports.removeHabit = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { habitId } = req.params;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const habitIndex = user.habits.findIndex(habit => habit.habitId === habitId);
+        if (habitIndex === -1) {
+            return res.status(404).json({ success: false, message: "Habit not found" });
+        }
+
+        user.habits.splice(habitIndex, 1);
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Habit removed successfully'
+        });
+
+    } catch (err) {
+        console.error("Remove Habit error:", err);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };

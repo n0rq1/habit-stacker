@@ -9,35 +9,44 @@ const { doHash, doHashValidation } = require('../utils/hashing');
 // SIGNUP
 exports.signup = async (req, res) => {
     const { email, password, username } = req.body;
+    const file = req.file;
 
     try {
-        const { error, value } = signupSchema.validate({ email, password, username });
+        const { error } = signupSchema.validate({ email, password, username });
         if (error) {
             return res.status(400).json({ success: false, message: error.details[0].message });
         }
 
-        //if the username already exists
         const existingUsername = await User.findOne({ username });
-        console.log(username)
         if (existingUsername) {
             return res.status(409).json({ success: false, message: "Username already exists" });
         }
 
-        //if the email already exists
         const existingUserEmail = await User.findOne({ email });
         if (existingUserEmail) {
             return res.status(409).json({ success: false, message: "Email already exists" });
         }
 
         const hashedPassword = await doHash(password, 12);
+
+        let profileImage = null;
+        if (file) {
+            const imageBuffer = fs.readFileSync(file.path);
+            const mimeType = file.mimetype;
+            profileImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+        }
+
         const newUser = new User({
             email,
             password: hashedPassword,
             username,
+            profileImage,
+            habits: [],
+            plans: []
         });
 
         const result = await newUser.save();
-        result.password = undefined; 
+        result.password = undefined;
 
         res.status(200).json({
             success: true,

@@ -36,14 +36,10 @@ exports.signinSchema = Joi.object({
 });
 
 exports.habitSchema = Joi.object({
-    habitID: Joi.number()
-        .integer()
-        .required(),
-
     habitName: Joi.string()
         .min(3)
         .max(40)
-        .required(),
+        .optional(),
 
     habitDescription: Joi.string()
         .allow('')
@@ -52,45 +48,5 @@ exports.habitSchema = Joi.object({
 
     habitImage: Joi.string()
         .allow('', null)
-        .optional(),
-
-    habitMinTime: Joi.number()
-        .required()
-        .messages({
-            'number.base': 'habitMinTime must be a number'
-        }),
-
-    habitMaxTime: Joi.number()
-        .required()
-        .messages({
-            'number.base': 'habitMaxTime must be a number'
-        }),
-
-    preferredTime: Joi.string()
-        .required(),
-
-    startTime: Joi.string()
-        .pattern(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-        .required()
-        .messages({
-            'string.pattern.base': 'Start time must be in HH:MM format'
-        }),
-
-    endTime: Joi.string()
-        .pattern(/^([0-1]\d|2[0-3]):([0-5]\d)$/)
-        .required()
-        .custom((value, helpers) => {
-            const start = helpers.state.ancestors[0].startTime;
-            if (start && value <= start) {
-                return helpers.message('End time must be after start time');
-            }
-            return value;
-        }),
-
-    daysOfWeek: Joi.array()
-        .items(Joi.string().valid(
-            'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-        ))
         .optional()
-        .default([])
 });
