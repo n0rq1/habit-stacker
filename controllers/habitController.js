@@ -40,7 +40,7 @@ exports.createHabit = async (req, res) => {
             });
         }
 
-        let habitImage = null;
+        let habitImage = value.habitImage || null;
         if (file) {
             const imageBuffer = fs.readFileSync(file.path);
             const mimeType = file.mimetype;
