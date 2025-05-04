@@ -1,6 +1,8 @@
 const { habitSchema } = require("../middlewares/validator");
 const User = require('../models/usersModel');
 const { v4: uuidv4 } = require('uuid'); 
+const fs = require('fs');
+const path = require('path');
 
 const normalizeHabitName = (habitName) => {
     return habitName.replace(/\s+/g, '').toLowerCase();
@@ -9,6 +11,8 @@ const normalizeHabitName = (habitName) => {
 exports.createHabit = async (req, res) => {
     try {
         const userId = req.params.userId;
+
+        const file = req.file;
         const { error, value } = habitSchema.validate(req.body, { abortEarly: false });
 
         if (error) {
@@ -21,7 +25,6 @@ exports.createHabit = async (req, res) => {
         }
 
         const user = await User.findById(userId);
-        
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
@@ -37,7 +40,16 @@ exports.createHabit = async (req, res) => {
             });
         }
 
+        let habitImage = null;
+        if (file) {
+            const imageBuffer = fs.readFileSync(file.path);
+            const mimeType = file.mimetype;
+            habitImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
+        }
+
         value.habitId = habitId;
+        value.habitImage = habitImage;
+
         user.habits.push(value);
         await user.save();
 

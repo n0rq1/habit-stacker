@@ -100,7 +100,9 @@ exports.signin = async (req, res) => {
             user: {
                 username: existingUser.username,
                 email: existingUser.email,
-                profileImage: existingUser.profileImage || null
+                profileImage: existingUser.profileImage || null,
+                habits: existingUser.habits,
+                plans: existingUser.plans,
             }
         });
 
