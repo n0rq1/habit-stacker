@@ -36,12 +36,50 @@ exports.signup = async (req, res) => {
             profileImage = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
         }
 
+        habitsData = [
+            { habitId: "1", habitName: 'Yoga', habitDescription: 'Improve flexibility and calm your mind through controlled poses and breathing.'},
+            { habitId: "2", habitName: 'Gym', habitDescription: 'Build strength and stamina with weight training and cardio workouts.', },
+            { habitId: "3", habitName: 'Meditation', habitDescription: 'Reduce stress and improve focus through mindful breathing.'},
+            { habitId: "4", habitName: 'Walking', habitDescription: 'Boost heart health and clear your mind with daily walks.'},
+            { habitId: "5", habitName: 'Reading', habitDescription: 'Expand your knowledge and unwind with a good book.'},
+            { habitId: "6", habitName: 'Stretching', habitDescription: 'Loosen tight muscles and prevent injuries through daily stretching.'},
+            { habitId: "7", habitName: 'Earthing', habitDescription: 'Reconnect with nature by walking barefoot on natural ground.'},
+            { habitId: "8", habitName: 'Cycling', habitDescription: 'Strengthen your legs and enjoy the outdoors with cycling.'},
+            { habitId: "9", habitName: 'Dancing', habitDescription: 'Lift your mood and stay active with fun dance routines.'},
+            { habitId: "10", habitName: 'Drink Water', habitDescription: 'Stay hydrated to improve energy and focus.'},
+            { habitId: "11", habitName: 'Journaling', habitDescription: 'Organize your thoughts and reflect through writing.'},
+            { habitId: "12", habitName: 'Skincare', habitDescription: 'Nourish your skin with a consistent self-care routine.' },
+            { habitId: "13", habitName: 'DigitalDetox', habitDescription: 'Take a break from screens to refresh your mind and body.'},
+            { habitId: "14", habitName: 'Cleaning', habitDescription: 'Create a tidy, stress-free space with regular cleaning.'},
+            { habitId: "15", habitName: 'Cooking', habitDescription: 'Fuel your body and creativity through homemade meals.'}
+        ];
+
+        const habs = habitsData.map((habit, index) => {
+            const normalizedName = habit.habitName.replace(/[^a-zA-Z]/g, '').toLowerCase();
+            const imagePath = path.join(__dirname, '..', 'assets', 'defaultImages', `${normalizedName}.png`);
+            
+            let base64Image = null;
+            try {
+                const imageBuffer = fs.readFileSync(imagePath);
+                base64Image = `data:image/png;base64,${imageBuffer.toString('base64')}`;
+            } catch (err) {
+                console.error(`Failed to load image for ${habit.habitName}:`, err.message);
+            }
+        
+            return {
+                habitId: `${index + 1}`,
+                habitName: habit.habitName,
+                habitDescription: habit.habitDescription,
+                habitImage: base64Image, // embeds the actual image
+            };
+        });
+
         const newUser = new User({
             email,
             password: hashedPassword,
             username,
             profileImage,
-            habits: [],
+            habits: habs,
             plans: []
         });
 
