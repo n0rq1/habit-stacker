@@ -77,7 +77,7 @@ exports.getPlans = async (req, res) => {
 exports.updatePlan = async (req, res) => {
     try {
         const { userId, planId } = req.params;
-        const { planName } = req.body;
+        const { planName, activities } = req.body;
 
         // Check if planName is provided
         if (!planName || typeof planName !== 'string' || planName.trim() === '') {
@@ -113,6 +113,9 @@ exports.updatePlan = async (req, res) => {
 
         plan.planName = planName.trim();
 
+        if (Array.isArray(activities)) {
+            plan.activities = activities;
+          }
         await user.save();
 
         res.status(200).json({
