@@ -127,6 +127,40 @@ exports.updatePlan = async (req, res) => {
     }
 };
 
+
+exports.updateActivityStatus = async (req, res) => {
+    try {
+      const { userId, planId } = req.params;
+      const { activityId, dateIndex, newStatus } = req.body;
+  
+      if (typeof newStatus !== 'boolean' || typeof dateIndex !== 'number') {
+        return res.status(400).json({ success: false, message: "Invalid input" });
+      }
+  
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ success: false, message: "User not found" });
+  
+      const plan = user.plans.find(p => p.planId === planId);
+      if (!plan) return res.status(404).json({ success: false, message: "Plan not found" });
+  
+      const activity = plan.activities.find(a => a.activityId === activityId);
+      if (!activity || !activity.status || activity.status.length <= dateIndex) {
+        return res.status(404).json({ success: false, message: "Activity or index not found" });
+      }
+  
+      activity.status[dateIndex] = newStatus;
+  
+      await user.save();
+  
+      res.status(200).json({ success: true, message: "Status updated", updatedStatus: newStatus });
+    } catch (err) {
+      console.error("updateActivityStatus error:", err);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  };
+  
+
+
 exports.removePlan = async (req, res) => {
     try {
         const { userId, planId } = req.params;

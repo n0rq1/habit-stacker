@@ -8,5 +8,6 @@ router.get('/getPlans/:userId', authenticateUser, planController.getPlans);
 router.put('/updatePlan/:userId/:planId', authenticateUser, planController.updatePlan);
 router.delete('/removePlan/:userId/:planId', authenticateUser, planController.removePlan);
 router.get('/getPlan/:userId/:planId', authenticateUser, planController.getPlan);
+router.put('/updateActivityStatus/:userId/:planId', authenticateUser, planController.updateActivityStatus);
 
 module.exports = router;
