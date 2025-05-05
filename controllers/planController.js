@@ -7,10 +7,10 @@ exports.createPlan = async (req, res) => {
         const { userId } = req.params;
         const { planName, activities } = req.body;
 
-        if (!planName || !activities || activities.length === 0) {
+        if (!planName) {
             return res.status(400).json({
                 success: false,
-                message: "Plan name and at least one activity must be provided!"
+                message: "Plan name must be provided!"
             });
         }
 
@@ -29,30 +29,6 @@ exports.createPlan = async (req, res) => {
             planName,
             activities: []
         };
-
-        for (let activity of activities) {
-            const habit = user.habits.find(h => h.habitId === activity.habitId);
-
-            if (!habit) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Habit with habitId ${activity.habitId} not found for the user`
-                });
-            }
-
-            newPlan.activities.push({
-                habit: {
-                    habitId: habit.habitId,
-                    habitName: habit.habitName,
-                    habitDescription: habit.habitDescription,
-                    habitImage: habit.habitImage
-                },
-                dates: activity.dates,
-                times: activity.times,
-                timeOfDay: activity.timeOfDay,
-                status: activity.status
-            });
-        }
 
         user.plans.push(newPlan);
         await user.save();
@@ -101,27 +77,47 @@ exports.getPlans = async (req, res) => {
 exports.updatePlan = async (req, res) => {
     try {
         const { userId, planId } = req.params;
-        const updates = req.body;
+        const { planName } = req.body;
+
+        // Check if planName is provided
+        if (!planName || typeof planName !== 'string' || planName.trim() === '') {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Plan name must be provided and cannot be empty" 
+            });
+        }
 
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
+        // Find the plan in the user's plans array
         const plan = user.plans.find(p => p.planId === planId);
         if (!plan) {
             return res.status(404).json({ success: false, message: "Plan not found" });
         }
 
-        Object.keys(updates).forEach(key => {
-            plan[key] = updates[key];
-        });
+        // Check if a plan with the same name already exists
+        const isDuplicate = user.plans.some(p => 
+            p.planId !== planId && 
+            p.planName.toLowerCase() === planName.trim().toLowerCase()
+        );
+        
+        if (isDuplicate) {
+            return res.status(409).json({
+                success: false,
+                message: "A plan with this name already exists"
+            });
+        }
+
+        plan.planName = planName.trim();
 
         await user.save();
 
         res.status(200).json({
             success: true,
-            message: "Plan updated successfully",
+            message: "Plan name updated successfully",
             plan
         });
     } catch (err) {
