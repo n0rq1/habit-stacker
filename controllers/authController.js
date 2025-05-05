@@ -74,13 +74,27 @@ exports.signup = async (req, res) => {
             };
         });
 
+        // Create default plans
+        const defaultPlans = [
+            {
+                planId: `plan_${Date.now()}_1`,
+                planName: "Sports",
+                activities: []
+            },
+            {
+                planId: `plan_${Date.now()}_2`,
+                planName: "Learning",
+                activities: []
+            }
+        ];
+
         const newUser = new User({
             email,
             password: hashedPassword,
             username,
             profileImage,
             habits: habs,
-            plans: []
+            plans: defaultPlans  // Add the default plans here
         });
 
         const result = await newUser.save();
